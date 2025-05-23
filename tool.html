@@ -1,0 +1,208 @@
+<div class="card">
+  <div class="top-section">
+    <div class="border"></div>
+    <div class="icons">
+      <div class="logo">
+        <img id="ctiTool" class="topsvg" src="/img/CTI.svg" width="30" height="30" alt="CTI" />
+      </div>
+      <div class="social-media">
+        <span id="status_title_id" class="status_title"></span>
+      </div>
+    </div>
+
+    <div class="icon-section">
+      <div data-action="dial" class="smBox">
+        <img src="/img/dial.png" class="svgx" alt="dial" />
+        <span class="icon_title">Dial</span>
+      </div>
+      <div data-action="hangup" class="smBox">
+        <img src="/img/hangup.png" class="svgx" alt="Hang Up" />
+        <span class="icon_title">Hang Up</span>
+      </div>
+      <div data-action="dispose" class="smBox">
+        <img src="/img/dispose.png" class="svgx" alt="dispose" />
+        <span class="icon_title">Dispose</span>
+      </div>
+      <div data-action="conference" class="smBox">
+        <img src="/img/conference.png" class="svgx" alt="conference" />
+        <span class="icon_title">Conference</span>
+      </div>
+      <div data-action="transfer" class="smBox">
+        <img src="/img/transfer.png" class="svgx" alt="transfer" />
+        <span class="icon_title">Transfer</span>
+      </div>
+      <div data-action="break" class="smBox">
+        <img src="/img/break.png" class="svgx" alt="break" />
+        <span class="icon_title">Break</span>
+      </div>
+      <div data-action="hold" class="smBox">
+        <img src="/img/hold.png" class="svgx" alt="hold" />
+        <span class="icon_title">Hold</span>
+      </div>
+      <div data-action="changeservice" class="smBox">
+        <img src="/img/changesrv.png" class="svgx" alt="Chnagesrv" />
+        <span class="icon_title">Change service</span>
+      </div>
+      <div data-action="auto" class="smBox">
+        <img src="/img/auto.png" id="auto" class="svgx" alt="auto" />
+        <span class="icon_title">Auto</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-section">
+    <div class="toolBox" id="dialpad" style="display: none;">
+      <input type="number" id="dialInput" />
+      <div class="buttons">
+        <button data-press="1">1</button>
+        <button data-press="2">2</button>
+        <button data-press="3">3</button>
+        <button data-press="4">4</button>
+        <button data-press="5">5</button>
+        <button data-press="6">6</button>
+        <button data-press="7">7</button>
+        <button data-press="8">8</button>
+        <button data-press="9">9</button>
+        <button id="clearBtn" style="padding: 0px;" data-clear>
+          <img src="/img/clear.png" class="svgx svgx2" alt="clear" />
+        </button>
+        <button data-press="0">0</button>
+        <button id="callBtn" style="padding: 0px;" data-call>
+          <img src="/img/Call.png" class="svgx svgx2" alt="call" />
+        </button>
+      </div>
+    </div>
+
+    <div class="toolBox" id="BreakContainer" style="display: none;">
+
+      <div id="breakStatus" style="display: none;" class="breakStatus">
+        <div id="break_title_id" class="message">Agent is on a Break!</div>
+        <div class="breaksvg">
+          <img id="breakIMG" src="/img/BreakBig.png" class="Breaksvg" alt="break" />
+        </div>
+        <div class="unbreak">
+          <input id="agentpassword" placeholder="enter password" type="password">
+          <button id="unbreakBtn">unbreak</button>
+        </div>
+
+      </div>
+
+      <div id="breakList" style="display: flex;" class="Breakcard">
+        <div class="message">Select Break Type</div>
+        <ul class="list" style="--hover-storke:#fff; --hover-color:#fff">
+          <li data-break="Lunch" data-img="lunch.png" class="element" style="--color:#5353ff">
+            <label for="rename">
+              <input type="radio" id="rename" name="filed" checked="" />
+              <img src="/img/lunch.png" height="19px" width="19px" alt="" class="svgx2">
+              Lunch</label>
+          </li>
+          <div class="separator"></div>
+          <li data-break="Tea" data-img="BreakBig.png" class="element" style="--color:#5353ff">
+            <label class="label" for="addmember">
+              <input type="radio" id="addmember" name="filed" />
+              <img src="/img/BreakBig.png" alt="" height="19px" width="19px">
+              Tea</label>
+          </li>
+          <div class="separator"></div>
+          <li data-break="Meeting" data-img="meeting_1.png" class="element" style="--color:#5353ff">
+            <label for="settings">
+              <input type="radio" id="settings" name="filed" />
+              <img src="/img/meeting_1.png" alt="" height="19px" width="19px">
+              Meeting</label>
+          </li>
+          <div class="separator"></div>
+          <li data-break="Bio Break" data-img="bioBreak.png" class="element" style="--color:#5353ff">
+            <label for="delete">
+              <input type="radio" id="delete" name="filed" />
+              <img src="/img/bioBreak.png" alt="" height="19px" width="19px">
+              Bio Break</label>
+          </li>
+          <div id="breakDoneBtn" class="doneBtn">
+
+            done</div>
+
+        </ul>
+      </div>
+    </div>
+
+
+    <div id="statusCard" class="toolBox statuscard">
+
+      <div id="extensionStatus" class="infos">
+
+        <!-- <img class="image" src="/img/user.png" alt="User Image" /> -->
+
+
+
+        <div class="info">
+          <div>
+            <p class="name">
+              Extension Status
+            </p>
+            <p class="function">
+              <img src="/img/microphone.png" height="20px" width="20px" alt=""> Microphone Array (Realtek Audio)
+            </p>
+            <p class="function">
+              <img src="/img/speaker.png" height="20px" width="20px" alt=""> Speakers/Headphones (Realtek Audio)
+            </p>
+          </div>
+          <div class="stats">
+            <p class="flex flex-col">
+              Extension
+              <span class="state-value">
+                6066
+              </span>
+            </p>
+            <p class="flex">
+              status
+              <span class="state-value">
+                Registered
+              </span>
+            </p>
+
+
+          </div>
+        </div>
+      </div>
+      <div style="display: none;" id="agentStatus" class="infos">
+
+        <!-- <img class="image" src="/img/user.png" alt="User Image" /> -->
+
+
+
+        <div class="info">
+          <div>
+            <p class="name">
+              Mr Kunwar
+            </p>
+            <p class="function">
+              <img src="/img/status.png" height="20px" width="20px" alt="">active
+            </p>
+            <!-- <p class="function">
+              <img src="/img/speaker.png" height="20px" width="20px" alt=""> Speakers/Headphones (Realtek Audio)
+            </p> -->
+          </div>
+          <div class="stats">
+            <p class="flex flex-col">
+              Service
+              <span class="state-value">
+                Outbound
+              </span>
+            </p>
+            <p class="flex">
+              status
+              <span class="state-value">
+                Dialing
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- //here  i have to show two dots -->
+      <div class="status-box">
+        <div class="status-dot"></div>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
