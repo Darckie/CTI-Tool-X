@@ -13,8 +13,14 @@
     <div class="bottom-section form">
         <div class="form_front">
             <div class="form_details">Login</div>
-            <input id="agentId" placeholder="Agent Id" class="input" type="text">
+            <input id="agentId" placeholder="Agent Id" class="input agentID" type="text">
             <input id="agentPassword" placeholder="Password" class="input" type="text">
+            <input  id="agentExtension" placeholder="Extension" class="input" type="text" disabled>
+         
+              <select class="select" id="service" class="input">
+                  <option value="" disabled selected>Select Service</option>
+
+              </select>
 
             <button id="loginBtn" class="btn">
                 <span class="text">Login</span>

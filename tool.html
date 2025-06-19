@@ -4,53 +4,64 @@
     <div class="icons">
       <div class="logo">
         <img id="ctiTool" class="topsvg" src="/img/CTI.svg" width="30" height="30" alt="CTI" />
+        <div id="audioDevices" style=" display: flex; gap: 2px; align-items: center;">
+          <div class="device-icon" title="Microphone Array (Realtek Audio)">
+            <img src="/img/microphone.png" height="20" width="20" alt="Mic">
+          </div>
+          <div class="device-icon" title="Speakers/Headphones (Realtek Audio)">
+            <img src="/img/speaker.png" height="19" width="19" alt="Speaker">
+          </div>
+        </div>
       </div>
-      <div class="social-media">
-        <span id="status_title_id" class="status_title"></span>
-      </div>
+
+
+
+      <img id="logout" style="position: absolute;right: 3px;top: 7px;" src="/img/logout.png" height="19" width="19"
+        alt="logout">
+      <span style="margin-top: 8px;font-size: 11px;color: rgb(153 146 146);margin-right: 25px;font-weight: 700;"
+        id="agentName" class="icon_title">agent <img src="/img/logout.png" height="19" width="19" alt="Speaker"> </span>
+
+
+
+
+
+
     </div>
 
     <div class="icon-section">
-      <div data-action="dial" class="smBox">
-        <img src="/img/dial.png" class="svgx" alt="dial" />
-        <span class="icon_title">Dial</span>
-      </div>
-      <div data-action="hangup" class="smBox">
-        <img src="/img/hangup.png" class="svgx" alt="Hang Up" />
-        <span class="icon_title">Hang Up</span>
-      </div>
-      <div data-action="dispose" class="smBox">
-        <img src="/img/dispose.png" class="svgx" alt="dispose" />
-        <span class="icon_title">Dispose</span>
-      </div>
-      <div data-action="conference" class="smBox">
-        <img src="/img/conference.png" class="svgx" alt="conference" />
-        <span class="icon_title">Conference</span>
-      </div>
-      <div data-action="transfer" class="smBox">
-        <img src="/img/transfer.png" class="svgx" alt="transfer" />
-        <span class="icon_title">Transfer</span>
-      </div>
-      <div data-action="break" class="smBox">
-        <img src="/img/break.png" class="svgx" alt="break" />
-        <span class="icon_title">Break</span>
-      </div>
-      <div data-action="hold" class="smBox">
-        <img src="/img/hold.png" class="svgx" alt="hold" />
-        <span class="icon_title">Hold</span>
-      </div>
-      <div data-action="changeservice" class="smBox">
-        <img src="/img/changesrv.png" class="svgx" alt="Chnagesrv" />
-        <span class="icon_title">Change service</span>
-      </div>
-      <div data-action="auto" class="smBox">
-        <img src="/img/auto.png" id="auto" class="svgx" alt="auto" />
-        <span class="icon_title">Auto</span>
-      </div>
+      <!-- //icon actions-------------------- -->
     </div>
   </div>
 
   <div class="bottom-section">
+    <div class="statuscard">
+
+
+      <div class="status-group">
+        <div class="status-ribbon" id="agentStatusBar">
+          Agent Status <span id="agentStatus">Idle</span>
+        </div>
+
+        <div class="status-ribbon" id="extensionStatusBar">
+          Extension Status
+          <span id="extensionstatus">Idle</span>
+        </div>
+      </div>
+
+
+
+      <div class="status-ribbon" id="srvbar">
+        <div id="serviceX"> <span>Service :</span>
+          <span id="srviceName">outbound</span>
+        </div>
+        <div style="display: none;" id="messageInfo">
+
+        </div>
+      </div>
+
+
+
+    </div>
     <div class="toolBox" id="dialpad" style="display: none;">
       <input type="number" id="dialInput" />
       <div class="buttons">
@@ -104,10 +115,10 @@
               Tea</label>
           </li>
           <div class="separator"></div>
-          <li data-break="Meeting" data-img="meeting_1.png" class="element" style="--color:#5353ff">
+          <li data-break="Meeting" data-img="meet.png" class="element" style="--color:#5353ff">
             <label for="settings">
               <input type="radio" id="settings" name="filed" />
-              <img src="/img/meeting_1.png" alt="" height="19px" width="19px">
+              <img src="/img/meet.png" alt="" height="19px" width="19px">
               Meeting</label>
           </li>
           <div class="separator"></div>
@@ -124,85 +135,10 @@
         </ul>
       </div>
     </div>
+    <div id="statusCard"></div>
 
+    <!-- <iframe id="iframex" src="" style="border:1px solid #ccc;visibility: hidden;position: absolute;"></iframe> -->
 
-    <div id="statusCard" class="toolBox statuscard">
-
-      <div id="extensionStatus" class="infos">
-
-        <!-- <img class="image" src="/img/user.png" alt="User Image" /> -->
-
-
-
-        <div class="info">
-          <div>
-            <p class="name">
-              Extension Status
-            </p>
-            <p class="function">
-              <img src="/img/microphone.png" height="20px" width="20px" alt=""> Microphone Array (Realtek Audio)
-            </p>
-            <p class="function">
-              <img src="/img/speaker.png" height="20px" width="20px" alt=""> Speakers/Headphones (Realtek Audio)
-            </p>
-          </div>
-          <div class="stats">
-            <p class="flex flex-col">
-              Extension
-              <span class="state-value">
-                6066
-              </span>
-            </p>
-            <p class="flex">
-              status
-              <span class="state-value">
-                Registered
-              </span>
-            </p>
-
-
-          </div>
-        </div>
-      </div>
-      <div style="display: none;" id="agentStatus" class="infos">
-
-        <!-- <img class="image" src="/img/user.png" alt="User Image" /> -->
-
-
-
-        <div class="info">
-          <div>
-            <p class="name">
-              Mr Kunwar
-            </p>
-            <p class="function">
-              <img src="/img/status.png" height="20px" width="20px" alt="">active
-            </p>
-            <!-- <p class="function">
-              <img src="/img/speaker.png" height="20px" width="20px" alt=""> Speakers/Headphones (Realtek Audio)
-            </p> -->
-          </div>
-          <div class="stats">
-            <p class="flex flex-col">
-              Service
-              <span class="state-value">
-                Outbound
-              </span>
-            </p>
-            <p class="flex">
-              status
-              <span class="state-value">
-                Dialing
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- //here  i have to show two dots -->
-      <div class="status-box">
-        <div class="status-dot"></div>
-        <div class="status-dot"></div>
-      </div>
-    </div>
   </div>
+
 </div>

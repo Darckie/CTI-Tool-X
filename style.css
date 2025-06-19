@@ -1,11 +1,11 @@
 .card {
-    width: 300px;
+    width: 290px;
     height: 370px;
     border-radius: 20px;
     /* background: #0c40ec; */
     background: #313158;
     position: absolute;
-    right: 20px;
+    left: 20px;
     bottom: 20px;
     /* cursor: move; */
     padding: 15px;
@@ -23,8 +23,80 @@
     padding: 4px;
     border-radius: 6px;
     box-sizing: border-box;
-    /* border: 1px solid rgb(232, 230, 235); */
+    overflow: auto;
+    height: 110px;
 }
+
+/* // status bar---------------- */
+/* Container (optional wrapper if needed) */
+
+
+/* Common Ribbon Style */
+.status-ribbon {
+    display: flex;
+    align-items: center;
+    padding: 1px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* Grouped Status Bars (agent + extension) */
+.status-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* gap: 10px; */
+    justify-content: space-evenly
+}
+
+/* Ribbon color variants */
+#agentStatus {
+    font-size: 10px;
+    color: rgb(39, 231, 71);
+    font-weight: 600;
+    margin-left: 4px;
+    /* light green */
+}
+
+#extensionstatus {
+    font-size: 10px;
+    color: rgb(39, 231, 71);
+    font-weight: 600;
+    margin-left: 4px;
+    /* light blue */
+}
+
+#srvbar {
+    background-color: #ffffff;
+    font-size: 10px;
+    color: rgb(19, 18, 18);
+    font-family: system-ui;
+    font-weight: 500;
+    justify-content: center;
+    gap: 0px 6px;
+}
+
+/* //status bar  */
+
+
+
+#audioDevices {
+    justify-content: space-between;
+}
+
+.device-icon img {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.device-icon:hover img {
+    transform: scale(1.1);
+    /* background-color: #e0f0ff; */
+}
+
+
 
 .smBox {
     display: flex;
@@ -32,11 +104,17 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: .4s ease;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    /* transition: .4s ease; */
+}
+
+.smBox.inactive {
+    opacity: 0.2;
 }
 
 .smBox:hover {
-    transform: scale(1.24);
+    transform: scale(1.1);
 }
 
 .icon_title {
@@ -55,8 +133,8 @@
 }
 
 .svgx {
-    height: 35px;
-    width: 35px;
+    height: 31px;
+    width: 31px;
 }
 
 
@@ -209,6 +287,10 @@
     color: rgba(170, 222, 243, 0.721);
 }
 
+#logout:hover {
+    transform: scale(103%);
+}
+
 .card .bottom-section .row .item .big-text {
     font-size: 12px;
     display: block;
@@ -239,8 +321,11 @@
     height: 30px;
     border-radius: 4px;
     border: 1px solid rgb(206, 202, 202);
-    font-size: 16px;
+    font-size: 17px;
     margin-bottom: 4px;
+    font-weight: 600;
+    font-family: system-ui;
+    color: #eb0000;
     text-align: center;
 }
 
@@ -248,12 +333,12 @@
 .buttons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
+    /* gap: 2px; */
 }
 
 .buttons button {
     padding: 6px;
-    font-size: 14px;
+    /* font-size: 14px; */
     font-weight: 500;
     cursor: pointer;
 }
@@ -276,6 +361,7 @@
 #BreakContainer .message {
     font-size: 13px;
     font-weight: 400;
+    display: none;
     color: rgb(255, 255, 255);
     margin-top: 5px;
 }
@@ -317,13 +403,13 @@
 /* //break cardss-------------------------- */
 
 .Breakcard {
-    width: 60%;
+    width: 93%;
     margin: auto;
-    background-color: rgba(36, 40, 50, 1);
-    background-image: linear-gradient(139deg,
+    background-color: rgb(255, 255, 255);
+    /* background-image: linear-gradient(139deg,
             rgba(36, 40, 50, 1) 0%,
             rgba(36, 40, 50, 1) 0%,
-            rgba(37, 28, 40, 1) 100%);
+            rgba(37, 28, 40, 1) 100%); */
 
     user-select: none;
     border-radius: 10px;
@@ -339,7 +425,7 @@
 }
 
 .Breakcard .separator {
-    border-top: 1.5px solid #42434a;
+    border-top: 1.5px solid #e2e3e8;
 }
 
 .Breakcard .list {
@@ -358,11 +444,11 @@
 
 .doneBtn {
     display: flex;
-    background-color: #5353ff;
+    background-color: #323277;
     align-self: flex-end;
     justify-content: center;
     border-radius: 3px;
-    padding: 2px 6px;
+    padding: 4px 6px;
     font-size: 11px;
     color: #ffffff;
     font-weight: 600;
@@ -376,7 +462,7 @@
     color: #7e8590;
     gap: 7px;
     transition: all 0.3s ease-out;
-    padding: 2px 5px;
+    padding: 4px 5px;
     font-size: 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -391,7 +477,7 @@
 
 .Breakcard .list .element label:has(input[type="radio"]:checked),
 .Breakcard .list .element label:hover {
-    background-color: var(--color);
+    background-color: #323277;
     color: var(--hover-color);
 }
 
@@ -406,16 +492,50 @@
 
 /* //agent status css ----------------------------------------------------------------------------------- */
 .statuscard {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 1rem;
-    background-color: rgb(255, 255, 255);
-    padding: 1rem;
+    background: linear-gradient(0deg, #000000, #ff1515);
+    font-size: 10px;
+    color: #ffffff;
     font-family: system-ui;
+    font-weight: 500;
+    justify-content: center;
+    margin-top: -10px;
+    margin-bottom: 5px;
+
+    animation: blinkOpacity 1s infinite ease-in-out;
+}
+
+#messageInfo {
+    color: red;
+    font-size: 13px;
+    font-weight: 500;
 
 }
+
+/* Keyframes for blinking effect */
+@keyframes blinkOpacity {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+#audioDevices {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    position: absolute;
+    top: 0px;
+    left: 54px;
+
+}
+
 
 .infos {
     display: flex;
