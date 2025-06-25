@@ -114,7 +114,7 @@ class CTITool extends HTMLElement {
                         };
                         this.session.sessionKey = randomkey();
                         this.session.callingType = extension.message.iscalling;
-                        console.log("extension", extension);
+                        // console.log("extension", extension);
 
 
                         extension = extension.message.extension;
@@ -123,18 +123,18 @@ class CTITool extends HTMLElement {
                         let services = await this.getSingleService(selectedValue);
                         //if response is not in JSON format, handle it using json.text() or similar
                         if (typeof services === 'string') {
-                            console.log(services);
+                            // console.log(services);
                         }
 
                         services = JSON.parse(services);
                         // service_id: 1
                         // service_name: Test
                         // service_mobile: 8497487834 
-                        console.log("services", services);
+                        // console.log("services", services);
 
                         services = services.message;
 
-                        console.log("Extension Status:", extension);
+                        // console.log("Extension Status:", extension);
 
 
                         // i have to populate the service select boxes
@@ -190,7 +190,7 @@ class CTITool extends HTMLElement {
 
                             if (rsp.success == true) {
                                 const Regurl = rsp.message.response;
-                                console.log(Regurl);
+                                // console.log(Regurl);
 
 
 
@@ -201,7 +201,7 @@ class CTITool extends HTMLElement {
                                 const regUrl = this.buildRegUrl(agentId, agentExtensionInput, agentPassword, callingType, sessionKey);
 
 
-                                console.log("THE URL" + regUrl);
+                                // console.log("THE URL" + regUrl);
                                 shadow.getElementById('errorMsg').style.display = 'none';
                                 this.session.agentId = agentId;
                                 this.session.serviceId = serviceInput;
@@ -271,7 +271,7 @@ class CTITool extends HTMLElement {
             };
             const response = await this.apiPost(url, dataSet);
             const rsp = JSON.parse(response);
-            console.log(rsp);
+            // console.log(rsp);
 
             if (rsp.success === true) {
                 const actions = rsp.message;
@@ -298,17 +298,18 @@ class CTITool extends HTMLElement {
 
                     smBox.addEventListener('click', () => {
                         const allButtons = shadow.querySelectorAll('.icon-section .smBox');
-
-                        if (lastClickedBtn === smBox) {
-                            // Toggle off (restore all buttons)
-                            allButtons.forEach(btn => btn.classList.remove('inactive'));
-                            lastClickedBtn = null;
-                        } else {
-                            // Dim others and highlight this one
-                            allButtons.forEach(btn => btn.classList.add('inactive'));
-                            smBox.classList.remove('inactive');
-                            lastClickedBtn = smBox;
-                            // Call your action
+                        if (actionLower === 'dial' || actionLower === 'break' || actionLower === 'dispose' || actionLower === 'transfer') {
+                            if (lastClickedBtn === smBox) {
+                                // Toggle off (restore all buttons)
+                                allButtons.forEach(btn => btn.classList.remove('inactive'));
+                                lastClickedBtn = null;
+                            } else {
+                                // Dim others and highlight this one
+                                allButtons.forEach(btn => btn.classList.add('inactive'));
+                                smBox.classList.remove('inactive');
+                                lastClickedBtn = smBox;
+                                // Call your action
+                            }
                         }
                         this.fncOfAction(actionLower);
                     });
@@ -346,6 +347,9 @@ class CTITool extends HTMLElement {
                 const extensionId = shadow.getElementById('extensionId');
                 const extensionStatus = shadow.getElementById('extensionstatus');
                 const agentStatus = shadow.getElementById('agentStatus');
+
+
+
                 extensionStatus.innerHTML = statusObject.extensionStatus;
                 agentStatus.innerHTML = statusObject.agentStatus;
                 if (statusObject.callNumber) {
@@ -360,11 +364,48 @@ class CTITool extends HTMLElement {
                 const agentName = this.session.agentId;
                 const agentNameElement = shadow.getElementById('agentName');
                 agentNameElement.innerHTML = agentName;
-                // extensionId.innerHTML = this.session.Extension;
 
 
-                // Show the status card
-                // statusCard.style.display = 'flex';
+
+                //swap images based on status------------------------------
+
+
+                if (statusObject.agentStatus === 'INCALL') {
+                    this.hideElement('BreakContainer');
+                    this.hideElement('dialpad');
+
+                    shadow.getElementById('statusCard').style.display = 'block';
+                    const Callstatus = this.shadowRoot.getElementById('callStatus');
+                    Callstatus.innerHTML = "On Call";
+                    this.hideElement('transferSection');
+                    this.swapStatusSvg('incall.png');
+                } else if (statusObject.agentStatus === 'HANGUP') {
+
+                    this.hideElement('BreakContainer');
+                    this.hideElement('dialpad');
+                    shadow.getElementById('statusCard').style.display = 'block';
+                    const Callstatus = this.shadowRoot.getElementById('callStatus');
+                    Callstatus.innerHTML = "On Hangup";
+                    this.hideElement('transferSection');
+                    this.swapStatusSvg('Hangup.png');
+                } else if (statusObject.agentStatus === 'WRAPUP') {
+
+                    //dispose logic here----------------------------------------
+                    //auto dispose or any other logic--------------------------
+                    this.disposeAction();
+                    // this.hideElement('BreakContainer');
+                    // this.hideElement('dialpad');
+                    // shadow.getElementById('statusCard').style.display = 'block';
+                    // const Callstatus = this.shadowRoot.getElementById('callStatus');
+                    // Callstatus.innerHTML = "Dispose";
+                    // this.hideElement('transferSection');
+                    // this.swapStatusSvg('Dispose.png');
+
+                }
+
+                //swap status container-------------------------------
+
+
             } else {
                 console.error("Failed to check status:", statusObject);
             }
@@ -424,8 +465,14 @@ class CTITool extends HTMLElement {
         const callBtn = shadow.getElementById('callBtn');
         callBtn.addEventListener('click', async () => {
             const num = input.value.trim();
+
+            const status = this.shadowRoot.getElementById("agentStatus").textContent;
+            if (status != 'IDLE') {
+                console.log("agent status is not idle !")
+                return false;
+            }
             if (num.length !== 10) {
-                statusTitle.innerHTML = "Invalid number!";
+                this.fncTOshowMessage("please enter a valid 10 digit number");
                 return;
             } else {
                 const refObj = await this.fncRef(num)
@@ -436,12 +483,24 @@ class CTITool extends HTMLElement {
                 this.session.refId = refObj.refId;
 
                 const callStatus = await this.fncToCall(num);
-                console.log(callStatus);
+                // console.log(callStatus);
                 if (callStatus && callStatus.status === "Failed") {
-                    alert(response.message || "Dial failed");
+                    // alert(callStatus.message || "Dial failed");
+                    this.fncTOshowMessage("Dial failed: " + (callStatus.message || "Unknown error"));
                 } else {
                     // Success logic here
                     // alert("Dial success");
+                    this.fncTOshowMessage("calling " + num + " ...");
+                    //logic to show calling svg-----------------------
+
+                    this.hideElement('BreakContainer');
+                    this.hideElement('dialpad');
+                    const Callstatus = this.shadowRoot.getElementById('callStatus');
+                    Callstatus.innerHTML = "Calling " + num;
+                    this.hideElement('transferSection');
+
+                    this.swapStatusSvg('calling.png');
+
 
                 }
 
@@ -451,13 +510,20 @@ class CTITool extends HTMLElement {
         });
 
         //status logic here-----------------------------
-
+        //#3 API 3 Transfer call btn logic----------------------------------------------------------
+        const transferBtn = shadow.getElementById('transfer_btn');
+        transferBtn.addEventListener('click', async () => {
+            const trResponse = this.transferCall();
+            if (trResponse.success) {
+                this.fncTOshowMessage(trResponse.message);
+            }
+        })
 
         setInterval(() => {
             this.fncToToggleStatus();
         }, 5000);
         //break logic here-----------------
-        // ...existing code...
+
 
         // Break Done Button Logic
         const breakDoneBtn = shadow.getElementById('breakDoneBtn');
@@ -483,11 +549,11 @@ class CTITool extends HTMLElement {
         // Break Done Button Logic
         const unbreakBtn = shadow.getElementById('unbreakBtn');
         if (unbreakBtn) {
-            unbreakBtn.addEventListener('click', () => {
+            unbreakBtn.addEventListener('click', async () => {
                 // Find the checked radio input inside the break list
 
                 const password = shadow.getElementById('agentpassword').value;
-                if (password == this.session.agentPassword) {
+                if (password === this.session.agentPassword) {
                     shadow.getElementById('agentpassword').value = '';
                     const breakStatus = this.shadowRoot.getElementById('breakStatus');
                     const breakContainer = this.shadowRoot.getElementById('BreakContainer');
@@ -495,8 +561,11 @@ class CTITool extends HTMLElement {
                     const breakList = this.shadowRoot.getElementById('breakList');
                     breakStatus.style.display = 'none';
                     breakList.style.display = 'block';
-                    this.session.BreakName
-                    this.Unbreak();
+                    const breakName = this.session.BreakName;
+                    // this.Unbreak();
+                    const breakType = 'unbreak';
+                    const unbrsp = await this.break(this.session.agentId, breakName, breakType);
+                    console.log(unbrsp + "unbreak response");
                 } else {
                     shadow.getElementById('agentpassword').value = '';
                     shadow.getElementById('agentpassword').placeholder = 'wrong password';
@@ -505,12 +574,12 @@ class CTITool extends HTMLElement {
             });
         }
 
-        // ...existing code...
+
 
     }
     // ...break logic code...
 
-    handleBreakSelection(breakName, imgName) {
+    async handleBreakSelection(breakName, imgName) {
         // Your logic here
         console.log('Selected break:', breakName, 'Image:', imgName);
         const breakStatus = this.shadowRoot.getElementById('breakStatus');
@@ -522,10 +591,10 @@ class CTITool extends HTMLElement {
         breakImg.src = '/img/' + imgName;
         breakTitle.innerHTML = "Agent is on a " + breakName + "Break!";
         this.session.BreakName = breakName;
-        //break api--------------------------------
+        const breakType = "break";
 
-        this.break(this.session.agentId, breakName);
-
+        const breakRsp = await this.break(this.session.agentId, breakName, breakType);
+        console.log(breakRsp + "break response");
         // You can trigger further actions here
 
     }
@@ -545,8 +614,41 @@ class CTITool extends HTMLElement {
         } else if (action == 'dispose') {
             this.disposeAction();
         }
-    }
+        else if (action == 'hold') {
+            this.holdAction();
+        }
 
+        else if (action == 'block') {
+            this.blockAction();
+        }
+        else if (action == 'transfer') {
+            // i have to render transfer inputs based on the data
+            if (this.session.callNumber) {
+                this.transferAction();
+
+            } else {
+                this.fncTOshowMessage("no call in progress to transfer");
+            }
+
+        }
+    }
+    //swap svg fnc--------------------------------------------------------
+    swapStatusSvg(filename) {
+        this.shadowRoot.getElementById('statusCard').style.display = 'block';
+
+        const statusSvg = this.shadowRoot.getElementById('statusSvg');
+        if (filename === 'calling.png') {
+            //i have to change the tansform rotate to 55 degree
+            statusSvg.style.transform = 'rotate(55deg)';
+        } else {
+            statusSvg.style.transform = 'rotate(0deg)';
+        }
+
+
+        if (statusSvg) {
+            statusSvg.src = `/img/${filename}`;
+        }
+    }
     //btn actions
     // Dial Button
     dialAction = () => {
@@ -555,6 +657,7 @@ class CTITool extends HTMLElement {
         this.playSound('/sound/sound.mp3');
         this.hideElement('BreakContainer');
         this.hideElement('statusCard');
+        this.hideElement('transferSection');
         this.toggleDisplay(dialPad);
 
     }
@@ -567,6 +670,7 @@ class CTITool extends HTMLElement {
         this.playSound('/sound/sound.mp3');
         this.hideElement('dialpad');
         this.hideElement('statusCard');
+        this.hideElement('transferSection');
         this.toggleDisplay(breakContainer);
 
 
@@ -592,6 +696,31 @@ class CTITool extends HTMLElement {
 
 
     disposeAction = async () => {
+        const disposeSection = this.shadowRoot.getElementById('disposeSection');
+        disposeSection.style.display = 'block';
+        this.hideElement('dialpad');
+        this.hideElement('statusCard');
+        this.hideElement('BreakContainer');
+        this.hideElement('transferSection');
+        //render first disposition--------------------------------
+        const disposeType = this.shadowRoot.getElementById('dispose_disp1');
+        disposeType.innerHTML = '<option value="">Select Type</option>';
+        const disposeList = await this.fetchDisposeTypes(); // Should be async if fetching from API
+        console.log("Dispose List:", disposeList);
+        if (disposeList.success) {
+            const types = disposeList.message.data.slice(5, 11) || [];
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.gn_sub_value;
+                option.textContent = type.gn_value;
+                disposeType.appendChild(option);
+            });
+        } //append onchange event to disposeType
+
+
+
+
+
         const response = await this.dispose();
         if (response.success) {
             this.fncTOshowMessage(response.message);
@@ -600,9 +729,174 @@ class CTITool extends HTMLElement {
         console.log("Dispose response:", response);
     }
 
+    holdAction = async () => {
+        const response = await this.hold();
+        if (response.success) {
+            this.fncTOshowMessage(response.message);
+            // this.session.callNumber = '';
+        }
+        console.log("Hold response:", response);
+    }
+
+    blockAction = async () => {
+        const response = await this.block();
+        if (response.success) {
+            this.fncTOshowMessage(response.message);
+            // this.session.callNumber = '';
+        }
+        console.log("Hold response:", response);
+    }
+
+
+    //Transfer functions-----------------------------------------------------------------------------
+    transferAction = async () => {
+        await this.renderTransferTypes();
+        const shadow = this.shadowRoot;
+        const transferSection = shadow.getElementById('transferSection');
+
+        this.playSound('/sound/sound.mp3');
+        this.hideElement('dialpad');
+        this.hideElement('statusCard');
+        this.hideElement('BreakContainer');
+        this.toggleDisplay(transferSection);
+    }
+
+    async renderTransferTypes() {
+        const transferType = this.shadowRoot.getElementById('transfer_type');
+        transferType.innerHTML = '<option value="">Select Type</option>';
+        const transferList = await this.fetchTransferTypes(); // Should be async if fetching from API
+        console.log("Transfer List:", transferList);
+        if (transferList.success) {
+            const types = transferList.message.data.slice(5, 11) || [];
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.gn_sub_value;
+                option.textContent = type.gn_value;
+                transferType.appendChild(option);
+            });
+        }
+
+        // Hide all dependent groups initially
+        this.shadowRoot.getElementById('service_group').style.display = 'none';
+        this.shadowRoot.getElementById('agent_group').style.display = 'none';
+
+        // Set up change handler
+        transferType.onchange = (e) => this.handleTransferTypeChange(e.target.value);
+    }
+    async handleTransferTypeChange(selectedType) {
+        // Hide all dependent groups first
+
+
+        if (selectedType === 'Service' || selectedType === 'Agent' || selectedType === 'Atxfer') {
+            // Show and populate service options
+            this.shadowRoot.getElementById('service_group').style.display = 'block';
+            // this.shadowRoot.getElementById('agent_group').style.display = 'block';
+            const serviceGroup = this.shadowRoot.getElementById('service_group');
+            serviceGroup.style.display = '';
+            const servList = await this.getServiceList();
+            console.log("Service List:", servList);
+            if (Array.isArray(servList) && servList.length > 0) {
+                this.renderServiceList(servList);
+            }
+        } else if (selectedType === 'Extention') {
+            this.shadowRoot.getElementById('service_group').style.display = 'none';
+            this.shadowRoot.getElementById('agent_group').style.display = 'none';
+            // Show and populate agent options
+            const extensionGroup = this.shadowRoot.getElementById('extension_group');
+            extensionGroup.style.display = '';
 
 
 
+        }
+    }
+
+    async handleserviceChange(selectedValue) {
+
+        const selectedType = this.shadowRoot.getElementById('transfer_type').value;
+        if (selectedType == "Agent" || selectedType == "Atxfer") {
+            this.shadowRoot.getElementById('agent_group').style.display = 'block';
+            console.log("selected agents --------------" + selectedValue)
+            // this.shadowRoot.getElementById('agent_group').style.display = '';
+            const agentGroup = this.shadowRoot.getElementById('agent_group');
+            // agentGroup.style.display = '';
+            const agentList = await this.getAgentList(selectedValue);
+            console.log(agentList);
+            if (agentList.success) {
+                this.renderAgentList(agentList.message);
+            }
+
+        } else {
+            console.log("either ext or warm");
+        }
+
+        // this.shadowRoot.getElementById('agent_group').style.display = 'none';
+    }
+
+    //fetch transfer types
+    async fetchTransferTypes() {
+        const dataSet = {
+            type: 'generalsetting',
+            agentid: this.session.agentId,
+        }
+        return this.apiPost(url, dataSet)
+            .then(response => JSON.parse(response))
+            .catch(error => {
+                console.error("Error fetching transfer types:", error);
+                return { success: false, message: "Failed to fetch transfer types" };
+            });
+    }
+
+    //Transfer functions-----------------------------------------------------------------------------
+    async getServiceList() {
+        const dataSet = {
+            type: 'loadservicefortransfer',
+            agentid: this.session.agentId,
+
+        }
+        const rsp = await this.apiPost(url, dataSet);
+        return JSON.parse(rsp);
+    }
+
+
+    async getAgentList(id) {
+        const dataSet = {
+            type: 'fillcity',
+            agentid: this.session.agentId,
+            state: id
+
+        }
+        const rsp = await this.apiPost(url, dataSet);
+        return JSON.parse(rsp);
+    }
+
+    renderServiceList(services) {
+        const serviceSelect = this.shadowRoot.getElementById('service_option');
+        serviceSelect.innerHTML = '<option value="">Select Service</option>';
+        services.forEach(service => {
+            const option = document.createElement('option');
+            option.value = service.value;
+            option.textContent = service.name;
+            serviceSelect.appendChild(option);
+        });
+
+        serviceSelect.onchange = (e) => this.handleserviceChange(e.target.value);
+    }
+
+
+    // 4. Render agent list
+    renderAgentList(agents) {
+        const agentSelect = this.shadowRoot.getElementById('agent_option');
+
+        agentSelect.innerHTML = '<option value="">Select Agent</option>';
+        agents.forEach(agent => {
+            const option = document.createElement('option');
+            option.value = agent.extension_number;
+            option.textContent = agent.agent_name;
+            agentSelect.appendChild(option);
+        });
+    }
+
+    //Transfer functions-----------------------------------------------------------------------------
     fncToToggleStatus = () => {
         const extensionStatus = this.shadowRoot.getElementById('extensionStatus');
         const agentStatus = this.shadowRoot.getElementById('agentStatus');
@@ -634,13 +928,13 @@ class CTITool extends HTMLElement {
     }
 
     toggleDisplay(element) {
-        const statusCard = this.shadowRoot.getElementById('statusCard');
+
         if (element.style.display === 'none') {
             element.style.display = 'block';
-            statusCard.style.display = 'none';
+
         } else {
             element.style.display = 'none';
-            statusCard.style.display = 'block';
+
         }
         // element.style.display = (element.style.display === 'none') ? 'block' : 'none';
     }
@@ -651,14 +945,12 @@ class CTITool extends HTMLElement {
 
 
     }
-
-    //url 
+    //url -----------------------------------------------------------------------------------
     buildRegUrl(agentId, extension, password, callingType, sessionKey) {
         return `reg.html?agent_id=${agentId}&ext=${extension}&pwd=${password}&iscalling=${callingType}&sessionkey=${sessionKey}`;
     }
 
     //api function for 'all api calls' here--------------------------------
-
 
     async apiPost(endpoint, data) {
         data = this.Parser(data, 'e'); // Encrypt data if needed
@@ -716,7 +1008,15 @@ class CTITool extends HTMLElement {
         const serviceBar = this.shadowRoot.getElementById('serviceX');
         if (info) {
             info.style.display = 'flex';
-            info.textContent = msg;
+            let msgx = msg;
+            if (msg.startsWith("<RESPONSE")) {
+
+                const match = msg.match(/<STATUSDESC>(.*?)<\/STATUSDESC>/);
+                msgx = match ? match[1] : 'Unknown';
+                console.log(msgx);
+
+            }
+            info.textContent = msgx;
         }
         if (serviceBar) {
             serviceBar.style.display = 'none';
@@ -724,7 +1024,7 @@ class CTITool extends HTMLElement {
         setTimeout(() => {
             if (info) info.style.display = 'none';
             if (serviceBar) serviceBar.style.display = 'flex';
-        }, 5000);
+        }, 10000);
     }
 
     //get all services-------------------------------------------004
@@ -746,7 +1046,7 @@ class CTITool extends HTMLElement {
             uuid: this.session.sessionKey
 
         }
-        console.log(dataSet);
+        // console.log(dataSet);
         return this.apiPost(url2, dataSet);
         //logic to end the session
     }
@@ -778,15 +1078,16 @@ class CTITool extends HTMLElement {
 
 
     async fncToCall(phoneNumber) {
+
+
+
+
         const lead = this.session.refLeadId;
         const batchid = this.session.refLeadName;
         const batchname = this.session.refId;
-        const status = this.shadowRoot.getElementById("agentStatus").textContent;
 
-        if (status != 'IDLE') {
-            console.log("agent status is not idle !")
-            return false;
-        }
+
+
         this.session.callNumber = phoneNumber;
         const data = {
             type: "mDial",
@@ -822,15 +1123,15 @@ class CTITool extends HTMLElement {
 
         const dataSet = {
             type: "closeCall",
-            disposition: "DISP123",
+            disposition: "NCNT",
             callnumber: this.session.callerNumber,
-            remarks: "Callback scheduled",
-            cbkdate: currentDate,
-            main_dispstn_code: "MAIN01",
-            sub_dispstn_code: "SUB01",
+            remarks: "",
+            cbkdate: "",
+            main_dispstn_code: "Not Contacted",
+            sub_dispstn_code: "NCNT",
             agentid: this.session.agentId
         }
-        console.log(dataSet);
+        // console.log(dataSet);
         const rsp = await this.apiPost(url2, dataSet);
         return JSON.parse(rsp);
     }
@@ -847,24 +1148,33 @@ class CTITool extends HTMLElement {
     }
 
 
-    break(agentId, breakType) {
-        const reqObj = {
-            type: "break",
-            reqtype: "break_start",
-            reqtype1: breakType,
-            agentId: agentId
+    async break(agentId, breakName, breakType) {
+        let reqObj = {};
+        if (breakType == 'break') {
+            reqObj = {
+                type: "break",
+                reqtype: "break_start",
+                reqtype1: breakName.toLowerCase(),
+                agentid: agentId
+            }
+            console.log(reqObj);
+            const resp = await this.apiPost(url2, reqObj);
+            return JSON.parse(resp);
+        } else {
+
+
+            reqObj = {
+                type: "break",
+                reqtype: "break_end",
+                reqtype1: this.session.BreakName,
+                agentid: this.session.agentId
+            }
+            console.log(reqObj);
+            const resp = await this.apiPost(url2, reqObj);
+            return JSON.parse(resp);
         }
-        return this.apiPost(url2, reqObj);
     }
-    Unbreak() {
-        const reqObj = {
-            type: "break",
-            reqtype: "break_end",
-            reqtype1: this.session.BreakName,
-            agentId: this.session.agentId
-        }
-        return this.apiPost(url2, reqObj);
-    }
+
 
     changeService(agentId, newService) {
         return this.apiPost('/api/changeService', { agentId, newService });
@@ -874,20 +1184,55 @@ class CTITool extends HTMLElement {
         return this.apiPost('/api/auto', { agentId, autoStatus });
     }
 
-    transfer(agentId, callId, targetAgent) {
-        return this.apiPost('/api/transfer', { agentId, callId, targetAgent });
+
+
+    async transferCall() {
+        //extract input details 
+        const InputExtension = this.shadowRoot.getElementById('transfer_extension').value || '';
+        const InputService = this.shadowRoot.getElementById('transfer_service').value || '';
+        const InputType = this.shadowRoot.getElementById('transfer_type').value || '';
+        const InputAgent = this.shadowRoot.getElementById('transfer_agent').value || '';
+
+        const dataSet = {
+            type: "transferCall",
+            agentid: this.session.agentId,
+            callnumber: this.session.callerNumber,
+            extension: InputExtension,
+            remarks: 'tum sambhalo bhai'
+        }
+        const rsp = await this.apiPost(url2, dataSet);
+        return JSON.parse(rsp);
     }
+
 
     conference(agentId, callId, participants) {
         return this.apiPost('/api/conference', { agentId, callId, participants });
     }
 
-    hold(agentId, callId) {
-        return this.apiPost('/api/hold', { agentId, callId });
+    async hold() {
+        const dataSet = {
+            type: "hold",
+            callnumber: this.session.callerNumber,
+            agentid: this.session.agentId
+
+        }
+        const rsp = await this.apiPost(url2, dataSet);
+        return JSON.parse(rsp);
     }
 
     // request parser function 
 
+
+    async block() {
+        const dataSet = {
+            type: "block",
+            callnumber: this.session.callerNumber,
+            agentid: this.session.agentId
+
+        }
+        const rsp = await this.apiPost(url2, dataSet);
+        return JSON.parse(rsp);
+    }
 
     Parser = (data, mode) => {
         if (mode == 'e') {

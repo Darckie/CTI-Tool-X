@@ -19,7 +19,8 @@
       <img id="logout" style="position: absolute;right: 3px;top: 7px;" src="/img/logout.png" height="19" width="19"
         alt="logout">
       <span style="margin-top: 8px;font-size: 11px;color: rgb(153 146 146);margin-right: 25px;font-weight: 700;"
-        id="agentName" class="icon_title">agent <img src="/img/logout.png" height="19" width="19" alt="Speaker"> </span>
+        id="agentName" class="icon_title">agent <img src="/img/exit_1221866.png" height="19" width="19" alt="Speaker">
+      </span>
 
 
 
@@ -82,6 +83,7 @@
           <img src="/img/Call.png" class="svgx svgx2" alt="call" />
         </button>
       </div>
+
     </div>
 
     <div class="toolBox" id="BreakContainer" style="display: none;">
@@ -135,7 +137,75 @@
         </ul>
       </div>
     </div>
-    <div id="statusCard"></div>
+    <div id="statusCard" style="display: none;">
+
+      <img id="statusSvg" src="" alt="">
+      <span id="callStatus">calling</span>
+
+    </div>
+    <!-- 003 bottom container -->
+    <div id="transferSection" class="toolBox" style="display: none;">
+      <div class="form-group">
+
+        <select class="form-control form-control-sm" id="transfer_type">
+          <option value="">Select Type</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="service_group" style="display: none;">
+
+        <select class="form-control form-control-sm" id="service_option">
+          <option value="">Select Service</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="agent_group" style="display: none;">
+        <select class="form-control form-control-sm" id="agent_option">
+          <option value="">Select Agent</option>
+        </select>
+      </div>
+      <div class="form-group" id="extension_group" style="display: none;">
+        <input type="text" id="transfer_extension" placeholder="Enter Extension" class="form-control form-control-sm">
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <button id="transfer_btn" class="doneBtn">Transfer</button>
+      </div>
+    </div>
+    <div id="disposeSection" class="toolBox" style="display: none;">
+      <div class="form-group">
+        <select class="form-control form-control-sm" id="dispose_disp1">
+          <option value="">Select Disposition 1</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="dispose_disp2_group" style="display: none;">
+        <select class="form-control form-control-sm" id="dispose_disp2">
+          <option value="">Select Disposition 2</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="dispose_disp3_group" style="display: none;">
+        <select class="form-control form-control-sm" id="dispose_disp3">
+          <option value="">Select Disposition 3</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="dispose_callback_group" style="display: none;">
+        <input type="datetime-local" id="dispose_callback_time" placeholder="Callback Time"
+          class="form-control form-control-sm">
+      </div>
+
+      <div class="form-group" id="dispose_remarks_group">
+        <textarea id="dispose_remarks" placeholder="Call Remarks" class="form-control form-control-sm"></textarea>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;display: flex;justify-content: center;">
+        <button id="dispose_submit_btn" class="doneBtn">Submit</button>
+        <button id="dispose_redial_btn" class="doneBtn" style="margin-left: 10px;">Redial</button>
+      </div>
+    </div>
+
 
     <!-- <iframe id="iframex" src="" style="border:1px solid #ccc;visibility: hidden;position: absolute;"></iframe> -->
 

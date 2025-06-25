@@ -506,8 +506,8 @@
 
 #messageInfo {
     color: red;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 10.5px;
+    font-weight: 700;
 
 }
 
@@ -525,6 +525,92 @@
         opacity: 1;
     }
 }
+
+/* // transfer call crm */
+/* Container for the tool section */
+#transferSection {
+    padding: 28px 16px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Labels like "Type", "Service", "Agent" */
+#transferSection .message {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+/* Select and input fields */
+#transferSection .form-control-sm,
+#disposeSection .form-control-sm {
+    padding: 6px 10px;
+    font-family: system-ui;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+#transferSection .form-control-sm:focus,
+#disposeSection .form-control-sm:focus {
+    border-color: #4d90fe;
+    outline: none;
+}
+
+/* Form group spacing */
+#transferSection .form-group,
+#disposeSection .form-group {
+    margin-bottom: 4px;
+}
+
+/* Transfer Button */
+#transfer_btn,
+#dispose_submit_btn,
+#dispose_redial_btn {
+    background-color: var(--backcolor, #007bff);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 120px;
+    float: right;
+}
+
+#statusSvg {
+    height: 54px;
+    width: 54px;
+    text-align: center;
+    display: block;
+    margin: auto;
+    margin-top: 33px;
+}
+
+#callStatus {
+    display: block;
+    margin: auto;
+    text-align: center;
+    font-weight: 600;
+    font-family: system-ui;
+    margin-top: 15px;
+    color: white;
+
+}
+
+#transfer_btn:hover {
+    background-color: #0056b3;
+}
+
+/* //transfer call style  */
 
 #audioDevices {
     display: flex;
