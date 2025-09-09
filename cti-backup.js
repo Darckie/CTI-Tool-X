@@ -1,19 +1,21 @@
-// Hi its darcki This is a CTI tool a web component that provides a CTI (Computer Telephony Integration) tool for agents.
+// Hi my existence is a bit of a mess,My name is Kunwar and this is a CTI tool a web component that provides a CTI (Computer Telephony Integration) tool for agents.
+//  
 const secretKey = "3bbd28e2-e187-40";
 const flag = "ON";
-const url = "https://cms.samparkcs.in:8443/callapi/DBApi"; // Update with your server URL
-const url2 = "https://cms.samparkcs.in:8443/callapi/CTIApi";
+const url = "https://sampark:8443/callapi/DBApi"; // Update with your server URL
+const url2 = "https://sampark:8443/callapi/CTIApi";
 // const urlx = 'https://sampark:8443/callapi/';
-const urlx = 'https://cms.samparkcs.in:8080/Agent/';
+const urlx = 'https://cms.samparkccs.in:8443/Agent/';
 
 
-
-const ip = "cms.samparkccs.in"; // Update with your server IP
+const ip= "cms.samparkccs.in"; // Update with your server IP
 
 
 //dispostion flag
 var fetchedDisposition = false;
 var transferFlag = false;
+
+
 
 
 class CTITool extends HTMLElement {
@@ -22,114 +24,65 @@ class CTITool extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.session = {};
 
+        this.coolPhone = new JsSIP.UA(this.configuration);
+
+        this.coolPhone.on('connected', (e) => {
+            this.fncTOshowMessage("connected...");
+        });
+
+        this.coolPhone.on('disconnected', (e) => {
+            this.fncTOshowMessage("disconnected...");
+        });
     }
     async connectedCallback() {
         //AGENT LOGIN STATUS-----------------------------------
         const agentId = this?.session?.aid;
         const Obj_initialization = await this.getInitialization();
-
-
+        // console.log("THE INITIALIZED OBJECT -----" + Obj_initialization);
+        //1st session variable
         if (Obj_initialization && JSON.parse(Obj_initialization).success == true) {
             this.session.websocketExtensionPassword = JSON.parse(Obj_initialization).message.websocketextensionpassword;
             this.session.autoAnswer = JSON.parse(Obj_initialization).message.autoanswer;
-            if (JSON.parse(Obj_initialization).message.prelogin == "Y") {
-                const AGENT_UID = new URLSearchParams(window.location.search).get('agentid');
-                console.log("AGENT_UID from URL:", AGENT_UID);
-                const preLoginResponse = await this.fncTOpreLogin(AGENT_UID);
-                // {"success":true,"message":{"response":"success","agentLevel":"0"}}
-                const preLoginResponseObj = JSON.parse(preLoginResponse);
-                if (preLoginResponseObj.success == true) {
-                    console.log("Prelogin Response Parsed:", preLoginResponseObj);
-                    const randomkey = function (length = 10) {
-                        return Math.random().toString(36).substring(2, length + 2);
-                    };
-                    this.session.sessionKey = randomkey();
-
-                    this.initPhoneJs({
-                        ip: ip,
-                        // glbl_ext: agentExtensionInput,
-                        glbl_ext: preLoginResponseObj.message.extension,
-                        // glbl_pwd: agentPassword,
-                        glbl_pwd: this.session.websocketExtensionPassword,
-                        sessionKey: this.session.sessionKey,
-                        callingType: 'Y'
-                    });
-                    // shadow.getElementById('errorMsg').style.display = 'none';
-                    this.session.agentId = preLoginResponseObj.message.agentid;
-                    this.session.serviceId = preLoginResponseObj.message.service;
-                    this.session.Extension = preLoginResponseObj.message.extension;
-                    this.session.agentPassword = preLoginResponseObj.message.password;
-                    this.session.agentLevel = preLoginResponseObj.message.agentLevel;
-                    let services = await this.getSingleService(preLoginResponseObj.message.agentid);
-                    services = JSON.parse(services);
-                    // console.log("services", services.message[0].service_name);
-                    this.session.serviceName = services.message[0].service_name;
-                    this.renderTool();
-                } else {
-                    Promise.all([
-                        fetch('style.css').then(res => res.text()),
-                        fetch('login.html').then(res => res.text()),
-                    ])
-                        .then(([css, html]) => {
-                            this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
-                            this.initLoginLogic();
-                        });
-
-                }
-
-
-            }
-            else {
-                Promise.all([
-                    fetch('style.css').then(res => res.text()),
-                    fetch('login.html').then(res => res.text()),
-                ])
-                    .then(([css, html]) => {
-                        this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
-                        this.initLoginLogic();
-                    });
-
-            }
-        }
+            // console.log("THE SESSION OBJECT -----" + this.session.websocketExtensionPassword);
+        }   //handle the case where initialization fails
         else {
-            this.showErrorBox("Initialization failed. Please try again later.");
             console.error("Initialization failed:", Obj_initialization);
+            this.shadowRoot.innerHTML = "<p>Initialization failed. Please try again later.</p>";
             return;
         }
-        // if (!agentId) {
-        //     Promise.all([
-        //         fetch('style.css').then(res => res.text()),
-        //         fetch('login.html').then(res => res.text()),
-        //     ])
-        //         .then(([css, html]) => {
-        //             this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
-        //             this.initLoginLogic();
-        //         });
-        // } else {
-        //     // If agentId exists, proceed with rendering the tool
-        //     const sessionStatus = await this.getSessionStatus(agentId);
-        //     console.log("THE SESSION STATUS -----" + sessionStatus);
-        //     this.renderTool();
-        // }
+        if (!agentId) {
+            Promise.all([
+                fetch('login.css').then(res => res.text()),
+                fetch('login.html').then(res => res.text()),
+
+            ])
+                .then(([css, html]) => {
+                    this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
+                    this.initLoginLogic();
+                });
+        } else {
+            // If agentId exists, proceed with rendering the tool
+            const sessionStatus = await this.getSessionStatus(agentId);
+            console.log("THE SESSION STATUS -----" + sessionStatus);
+            this.renderTool();
+        }
     }
-    renderTool() {
+    renderTool(Regurl) {
         Promise.all([
             fetch('style.css').then(res => res.text()),
             fetch('tool.html').then(res => res.text()),
         ]).then(([css, html]) => {
             this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
 
-            this.initLogic();
-
-
-
-
+            this.initLogic(Regurl);
         });
     }
     async initLoginLogic() {
         const shadow = this.shadowRoot;
+
         //logic for ctl box----------------------------------------------
-        const card = shadow.querySelector('#loginPanel');
+
+        const card = shadow.querySelector('.card');
         let isDragging = false, offsetX = 0, offsetY = 0;
         // Dragging Logic
         card.addEventListener('mousedown', (e) => {
@@ -178,7 +131,6 @@ class CTITool extends HTMLElement {
                         };
                         this.session.sessionKey = randomkey();
                         this.session.callingType = extension.message.iscalling;
-                        // console.log("Calling Type:", this.session.callingType);
                         // console.log("extension", extension);
 
 
@@ -235,8 +187,6 @@ class CTITool extends HTMLElement {
             });
 
         }
-
-
         const loginBtn = shadow.getElementById('loginBtn');
         if (loginBtn) {
             loginBtn.addEventListener('click', () => {
@@ -256,8 +206,8 @@ class CTITool extends HTMLElement {
                             if (rsp.success == true) {
                                 this.session.agentLevel = rsp.message.agentLevel;
                                 // console.log("agentLevel is " + rsp.agentLevel)
-                                // const  = rsp.message.response;
-                                // console.log();
+                                const Regurl = rsp.message.response;
+                                // console.log(Regurl);
                                 // console.log(rsp)
 
 
@@ -265,27 +215,18 @@ class CTITool extends HTMLElement {
 
                                 const sessionKey = this.session.sessionKey;
                                 const callingType = this.session.callingType;
-                                console.log("Calling Type:", callingType);
 
-                                // const  = this.build(agentId, agentExtensionInput, agentPassword, callingType, sessionKey);
-                                //phone .js logic here ------------------------------------------------------------------------------
-                                this.initPhoneJs({
-                                    ip: ip,
-                                    glbl_ext: agentExtensionInput,
-                                    glbl_pwd: agentPassword,
-                                    sessionKey: sessionKey,
-                                    callingType: callingType
-                                });
+                                const regUrl = this.buildRegUrl(agentId, agentExtensionInput, agentPassword, callingType, sessionKey);
 
                                 //phone js logic---------------------------------------------------
-                                // console.log("THE URL" + );
+                                // console.log("THE URL" + regUrl);
                                 shadow.getElementById('errorMsg').style.display = 'none';
                                 this.session.agentId = agentId;
                                 this.session.serviceId = serviceInput;
                                 this.session.Extension = agentExtensionInput;
                                 this.session.agentPassword = agentPassword;
 
-                                this.renderTool();
+                                this.renderTool(regUrl);
                             } else {
                                 // Show error or feedback
                                 console.error('Login failed:', rsp.message.response);
@@ -303,28 +244,20 @@ class CTITool extends HTMLElement {
                 }
             });
         }
-
-
-        const hideErrorBox = shadow.getElementById('hideError');
-        if (hideErrorBox) {
-            hideErrorBox.addEventListener('click', async () => {
-                this.hideErrorBox();
-            });
-        }
     }
 
-    initLogic() {
+    initLogic(Regurl) {
         const shadow = this.shadowRoot;
         const card = shadow.querySelector('.card');
         let isDragging = false, offsetX = 0, offsetY = 0;
 
         // const RegIframe = shadow.getElementById('iframex');
-        // RegIframe.src = urlx + ;
-        // window.open(
-        //     urlx + ,
-        //     "_blank",
-        //     "location=no,menubar=no,height=300,width=500,top=100,left=100,titlebar=no,status=no"
-        // );
+        // RegIframe.src = urlx + Regurl;
+        window.open(
+            urlx + Regurl,
+            "_blank",
+            "location=no,menubar=no,height=300,width=500,top=100,left=100,titlebar=no,status=no"
+        );
         // Dragging Logic
         card.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -342,30 +275,7 @@ class CTITool extends HTMLElement {
         document.addEventListener('mouseup', () => {
             isDragging = false;
         });
-
-
-        //hide error box logic-----------
-        const hideErrorBox = shadow.getElementById('hideError');
-        if (hideErrorBox) {
-            hideErrorBox.addEventListener('click', async () => {
-                this.hideErrorBox();
-            });
-        }
         //#1 -- API 1 
-
-        //Refresh Login------------------------
-
-        const dataSet = {
-            type: 'login',
-            agentid: this.session.agentId,
-            password: this.session.agentPassword,
-            extension: this.session.Extension,
-            service: this.session.serviceId
-        }
-
-        setTimeout(this.apiPost, 3000, url, dataSet);
-
-
         //  fetch btns--------------------------
         const fncToFetchBtns = async () => {
             const agentId = this.session.agentId;
@@ -456,24 +366,8 @@ class CTITool extends HTMLElement {
                 const extensionId = shadow.getElementById('extensionId');
                 const extensionStatus = shadow.getElementById('extensionstatus');
                 const agentStatus = shadow.getElementById('agentStatus');
-                // console.log(extensionStatus);
-                //Logic to re initialize the phone.js----------------
-                if (extensionStatus.textContent.trim() == "UNKNOWN") {
-                    this.showErrorBox("Unknown status !");
 
-                    const sessionData = {
-                        ip: ip,
-                        glbl_ext: this.session.Extension,
-                        glbl_pwd: this.session.agentPassword,
-                        sessionKey: this.session.sessionKey,
-                        callingType: this.session.callingType
-                    };
-
-                    //setTimeout(this.initPhoneJs, 5000,sessionData);
-
-
-                }
-                if (agentStatus.textContent.trim() == "UNKNOWN" && extensionStatus.textContent.trim() == "DOWN") {
+                if (agentStatus == "UNKNOWN" && extensionStatus == "DOWN") {
                     this.logout(this.session.agentId);
                 }
 
@@ -499,17 +393,14 @@ class CTITool extends HTMLElement {
                 //set call service id -------------------------------
                 this.session.callServiceId = statusObject.sid || '0';
                 this.session.agentStatus = statusObject.agentStatus;
-                if (statusObject.callerId) {
-                    localStorage.setItem("callerNumber", statusObject.callerId);
-                }
                 this.shadowRoot.getElementById('soundWaves').style.display = "none";  //only for in call
                 if (statusObject.agentStatus === 'INCALL') {
+
                     if (!transferFlag) {
                         this.hideElement('BreakContainer');
                         this.hideElement('dialpad');
                         shadow.getElementById('statusCard').style.display = '';
                         const Callstatus = this.shadowRoot.getElementById('callStatus');
-
                         // this.shadowRoot.getElementById('soundWaves').style.display = "block";
                         Callstatus.innerHTML = "On Call";
                         this.hideElement('transferSection');
@@ -541,11 +432,6 @@ class CTITool extends HTMLElement {
                     // this.swapStatusSvg('Dispose.png');
 
                 }
-                if (statusObject.agentStatus === 'IDLE') {
-                    localStorage.removeItem("callerNumber");
-
-                }
-
 
                 //swap status container-------------------------------
 
@@ -575,7 +461,7 @@ class CTITool extends HTMLElement {
 
                 // 2. Render login page
                 Promise.all([
-                    fetch('style.css').then(res => res.text()),
+                    fetch('login.css').then(res => res.text()),
                     fetch('login.html').then(res => res.text()),
                 ]).then(([css, html]) => {
                     this.shadowRoot.innerHTML = `<style>${css}</style>${html}`;
@@ -611,19 +497,15 @@ class CTITool extends HTMLElement {
             const num = input.value.trim();
 
             const status = this.shadowRoot.getElementById("agentStatus").textContent;
-            const extStatus = this.shadowRoot.getElementById("extensionstatus").textContent;
-            if (status != 'IDLE' || extStatus != 'IDLE') {
+            if (status != 'IDLE') {
                 console.log("agent status is not idle !")
-                this.showErrorBox("Status is not IDLE. Please check your status.");
                 return false;
             }
             if (num.length !== 10) {
                 this.fncTOshowMessage("please enter a valid 10 digit number");
-                this.showErrorBox("Please enter a valid 10 digit number.");
                 return;
             } else {
                 const refObj = await this.fncRef(num)
-
                 console.log(refObj);
                 this.playSound('/sound/dialing.mp3');
                 this.session.refLeadId = refObj.refLead;
@@ -638,7 +520,6 @@ class CTITool extends HTMLElement {
                 } else {
                     // Success logic here
                     // alert("Dial success");
-                    localStorage.setItem("callerNumber", num);
                     const maskedNumber = num.slice(6);
                     const ms = "XXXXXX" + maskedNumber;
                     this.fncTOshowMessage("calling " + ms + " ...");
@@ -659,14 +540,12 @@ class CTITool extends HTMLElement {
             if (e.key === 'Enter') {
                 const num = input.value.trim();
                 const status = this.shadowRoot.getElementById("agentStatus").textContent;
-                if (status != 'IDLE' || extStatus != 'IDLE') {
-                    console.log("agent status is not idle !")
-                    this.showErrorBox("Status is not IDLE. Please check your status.");
+                if (status != 'IDLE') {
+                    console.log("agent status is not idle !");
                     return false;
                 }
                 if (num.length !== 10) {
                     this.fncTOshowMessage("please enter a valid 10 digit number");
-                    this.showErrorBox("Please enter a valid 10 digit number.");
                     return;
                 }
                 // Call the same function as callBtn click
@@ -730,6 +609,7 @@ class CTITool extends HTMLElement {
         }
 
         //unbreak logic here-----------------
+        // Break Done Button Logic
         const unbreakBtn = shadow.getElementById('unbreakBtn');
         if (unbreakBtn) {
             unbreakBtn.addEventListener('click', async () => {
@@ -1240,6 +1120,7 @@ class CTITool extends HTMLElement {
             }
         }
     }
+    // ...existing code...
     //#############################################################################
     //Dispose list ----------------------------------------------------
     fetchDispositonData = async () => {
@@ -1275,26 +1156,6 @@ class CTITool extends HTMLElement {
         // element.style.display = (element.style.display === 'none') ? 'block' : 'none';
     }
 
-
-    showErrorBox(errorTitle) {
-        const errorBox = this.shadowRoot.querySelector('#alertError');
-        const errorTitleEl = errorBox?.querySelector('.error__title');
-        if (errorBox && errorTitleEl) {
-            errorTitleEl.textContent = errorTitle;
-            errorBox.classList.add('show');
-            setTimeout(() => {
-                this.hideErrorBox();
-            }, 8000); // Hide after 8 seconds
-        }
-    }
-
-    hideErrorBox() {
-        const errorBox = this.shadowRoot.querySelector('#alertError');
-        if (errorBox) {
-            errorBox.classList.remove('show');
-        }
-    }
-
     hideElement(id) {
         const el = this.shadowRoot.getElementById(id);
         if (el) el.style.display = 'none';
@@ -1302,16 +1163,14 @@ class CTITool extends HTMLElement {
 
     }
     //url -----------------------------------------------------------------------------------
-    build(agentId, extension, password, callingType, sessionKey) {
+    buildRegUrl(agentId, extension, password, callingType, sessionKey) {
         return `reg.html?agent_id=${agentId}&ext=${extension}&pwd=${password}&iscalling=${callingType}&sessionkey=${sessionKey}`;
     }
 
     //api function for 'all api calls' here--------------------------------
 
     async apiPost(endpoint, data) {
-        // console.log("API Post Endpoint:", data);
         data = this.Parser(data, 'e'); // Encrypt data if needed
-        // console.log("API Post Data:", data);
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -1320,7 +1179,6 @@ class CTITool extends HTMLElement {
             });
 
             const resp = await response.text();
-            // console.log("API Post Response:", resp);
             return this.Parser(resp, 'd')
         } catch (error) {
             return { success: false, message: 'Network error', error };
@@ -1424,18 +1282,13 @@ class CTITool extends HTMLElement {
         // console.log(dataSet);
         return this.apiPost(url, dataSet);
     }
-    //prelogin
-    fncTOpreLogin(agentid) {
-        const dataSet = {
-            type: 'prelogin',
-            agent_uid: agentid,
-            agentid: 'test@1232323'
-        }
-        return this.apiPost(url, dataSet);
-    }
+
+
     // login(agentId, agentPassword) {
     //     return this.apiPost('/api/login', { agentId, agentPassword });
     // }
+
+
     logout(agentId) {
         return this.apiPost('/api/logout', { agentId });
     }
@@ -1478,10 +1331,7 @@ class CTITool extends HTMLElement {
         return JSON.parse(rsp);
     }
 
-    // fnc to generate list
-
     async dispose() {
-
 
         //get all the input elements---------------------
         const dispNameContent = this.shadowRoot.getElementById('dispose_disp1');
@@ -1734,96 +1584,72 @@ class CTITool extends HTMLElement {
         return encrypted;
     }
 
-    //phone js implementation#################################if i get status unknown i have to call this constructor one more time-------------------
-    initPhoneJs({ ip, glbl_ext, glbl_pwd, sessionKey, callingType }) {
-        let autoAns = (callingType.trim() == 'Y' ? true : false);
+    //phone js implementation#################################
+    initPhoneJs({ ip, glbl_ext, glbl_pwd, autoAns }) {
         this.coolPhone = null;
         this.mic = {};
         this.speaker = {};
         this.logoutCount = 0;
 
-        // console.log("Initializing phone JS with IP:", ip, "Extension:", glbl_ext, "Auto Answer:", autoAns, glbl_pwd);
-
+        // Helper to update mic/speaker in Shadow DOM
         const updateAudioDevices = () => {
-            if (!this.shadowRoot) return;
-
             const micSpan = this.shadowRoot.getElementById("microphone");
             const speakerSpan = this.shadowRoot.getElementById("speaker");
-            const micImg = this.shadowRoot.getElementById("microphoneimg");
-            const speakerImg = this.shadowRoot.getElementById("speakerimg");
-
-            if (micSpan) {
-                micSpan.title = this.mic["default"] || "";
-                if (micImg) {
-                    micImg.src = Object.keys(this.mic).length > 0 ? "/img/microphone.png" : "/img/microphoneOff.png";
-                }
-            }
-
-            if (speakerSpan) {
-                speakerSpan.title = this.speaker["default"] || "";
-                if (speakerImg) {
-                    speakerImg.src = Object.keys(this.speaker).length > 0 ? "/img/speaker.png" : "/img/speakeroff.png";
-                }
-            }
+            micSpan && (micSpan.textContent = this.mic["default"] || "");
+            speakerSpan && (speakerSpan.textContent = this.speaker["default"] || "");
         };
 
-        this.getMicrophone = async () => {
-            try {
-                await navigator.mediaDevices.getUserMedia({ audio: true }); // triggers permission prompt
-
-                this.mic = {};
-                this.speaker = {};
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                devices.forEach((device) => {
-                    if (device.kind === "audioinput" && device.label) {
-                        if ((device.deviceId).includes("default")) {
-                            this.mic[device.deviceId] = device.label;
+        this.getMicrophone = () => {
+            this.mic = {};
+            this.speaker = {};
+            navigator.mediaDevices.enumerateDevices()
+                .then((devices) => {
+                    this.mic = {};
+                    this.speaker = {};
+                    devices.forEach((device) => {
+                        if (device.kind == "audioinput" && device.label) {
+                            if ((device.deviceId).includes("default")) {
+                                this.mic[device.deviceId] = device.label;
+                            }
                         }
-                    }
-                    if (device.kind === "audiooutput" && device.label) {
-                        this.speaker[device.deviceId] = device.label;
+                        if (device.kind == "audiooutput" && device.label) {
+                            this.speaker[device.deviceId] = device.label;
+                        }
+                    });
+                    updateAudioDevices();
+                })
+                .then(() => {
+                    if (autoAns === 'Y') {
+                        if (Object.keys(this.mic).length < 1) {
+                            this.logoutCount++;
+                            this.fncTOshowMessage("Microphone permission blocked, disabled or disconnected!");
+                            if (this.logoutCount >= 5) {
+                                this.coolPhone.unregister({ all: true });
+                                this.logout();
+                            }
+                        } else {
+                            this.logoutCount = 0;
+                        }
                     }
                 });
-
-                updateAudioDevices();
-
-                if (autoAns) {
-                    if (Object.keys(this.mic).length < 1) {
-                        this.logoutCount++;
-                        console.warn("Microphone permission blocked, disabled or disconnected!");
-                        if (this.logoutCount >= 5) {
-                            this.coolPhone.unregister({ all: true });
-                            this.logout();
-                        }
-                    } else {
-                        this.logoutCount = 0;
-                    }
-                } else {
-                    this.showErrorBox("Microphone and speaker are ready.");
-                }
-            } catch (err) {
-                console.error("Microphone access error:", err);
-                this.showErrorBox("Microphone permission denied or blocked!");
-            }
         };
 
-        //alert("Socket Initilize");
-        const socket = new JsSIP.WebSocketInterface(`wss://${ip}:8089/ws`);
+        // SIP configuration
+        const socket = new JsSIP.WebSocketInterface('wss://' + ip + ':8089/ws');
         const configuration = {
             sockets: [socket],
-            uri: `sip:${glbl_ext}@${ip}`,
+            uri: 'sip:' + glbl_ext + '@' + ip,
             password: glbl_pwd
         };
 
         this.coolPhone = new JsSIP.UA(configuration);
 
         this.coolPhone.on('connected', () => {
-            this.showErrorBox("connected...");
+            this.fncTOshowMessage("connected...");
         });
 
         this.coolPhone.on('disconnected', () => {
-            this.showErrorBox("disconnected...");
+            this.fncTOshowMessage("disconnected...");
         });
 
         let state = {
@@ -1834,66 +1660,50 @@ class CTITool extends HTMLElement {
         };
 
         this.coolPhone.on('newRTCSession', (e) => {
-            //debugger;
-            this.showErrorBox("Ringing...");
+            this.fncTOshowMessage("Ringing...");
             this.getMicrophone();
-            //autoAns = true;
+
             const session = e.session;
             state = {
                 callReceived: autoAns,
-                callSession: e.session,
+                callSession: session,
                 fromNumber: "1",
                 toNumber: "2",
             };
 
-            const callOptions = {
-                mediaConstraints: { audio: true, video: false },
-                pcConfig: {
-                    // iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
-                    iceTransportPolicy: "all",
-                    rtcpMuxPolicy: "negotiate"
-                }
-            };
-
-
             if (autoAns) {
-
-                //alert("ANSWER");
-                // Only handle incoming calls
-                if (e.originator === 'remote') {
-                    e.session.on('confirmed', function () {
-                        console.log('Call is answered and media is active.');
-                        // e.session.answer(callOptions);
-
-                    });
-
-                    e.session.answer(callOptions);
-
-                    e.session.connection.addEventListener('addstream', (event) => {
-                        const audioElement = this.shadowRoot?.getElementById("remote-audio");
-                        if (audioElement) {
-                            audioElement.srcObject = event.stream;
-                            audioElement.play();
-                        }
-                    });
-
-
-                }
-
-
-
+                const callOptions = {
+                    mediaConstraints: { audio: true, video: false },
+                    pcConfig: {
+                        iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
+                        iceTransportPolicy: "all",
+                        rtcpMuxPolicy: "negotiate"
+                    }
+                };
+                state.callSession.answer(callOptions);
+                state.callSession.connection.addEventListener('addstream', (event) => {
+                    const audioElement = this.shadowRoot.getElementById("remote-audio");
+                    if (audioElement) {
+                        audioElement.srcObject = event.stream;
+                        audioElement.play();
+                    }
+                });
             }
         });
 
+        // Register other event handlers as needed...
+
+        // Start SIP phone after a short delay
         setTimeout(() => {
             this.coolPhone.start();
         }, 1000);
 
+        // Periodically check microphone
         setInterval(() => {
             this.getMicrophone();
         }, 5000);
 
-        // Control Methods
+        // Expose phone control methods as class methods if needed
         this.mutePhone = () => {
             if (state.callSession && state.callSession.isMuted().audio) {
                 state.callSession.unmute();
@@ -1901,18 +1711,13 @@ class CTITool extends HTMLElement {
                 state.callSession.mute();
             }
         };
-        this.answerPhone = () => { /* Add your answer logic here */ };
-        this.holdPhone = () => { /* Add your hold logic here */ };
-        this.hangupPhone = () => {
-            if (state.callSession) state.callSession.terminate();
-        };
+        this.answerPhone = () => { /* ... */ };
+        this.holdPhone = () => { /* ... */ };
+        this.hangupPhone = () => { if (state.callSession) state.callSession.terminate(); };
     }
-
 }
 
 
-
-customElements.define('cti-tool', CTITool);
 
 
 

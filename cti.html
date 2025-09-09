@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTI Tool</title>
-    <script src="smpcrypto.js">
-        
+    <script>
+        var client = ZAFClient.init();
+        client.invoke('resize', { width: '100%', height: '400px' });
     </script>
+    <script src="smpcrypto.js"></script>
+    <script src="jssip-3.10.0.min.js"></script>
 </head>
+
 
 <body>
     <script type="module" src="cti-tool.js"></script>

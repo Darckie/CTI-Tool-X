@@ -1,53 +1,45 @@
-.card {
+#loginPanel .card {
     width: 300px;
     height: 370px;
     border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* background: #0c40ec; */
     background: #313158;
     position: absolute;
-    left: 20px;
+    right: 20px;
     bottom: 20px;
-    /* cursor: move; */
     padding: 15px;
     overflow: hidden;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-
-
-.card .top-section {
+#loginPanel .card .top-section {
     height: 150px;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
-    /* background: linear-gradient(45deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%); */
-    /* background-color: white; */
     position: relative;
-    /* box-shadow: 2px 2px 4px #000000; */
 }
 
-.topsvg {
+#loginPanel .topsvg {
     padding-bottom: 5px;
     position: absolute;
     top: -1px;
 }
 
-.card .top-section .border {
+#loginPanel .card .top-section .border {
     border-bottom-right-radius: 10px;
     height: 30px;
     width: 130px;
-    background: white;
     background: #1b233d;
     position: relative;
     transform: skew(-40deg);
     box-shadow: -10px -10px 0 0 #1b233d;
 }
 
-.card .top-section .border::before {
+#loginPanel .card .top-section .border::before {
     content: "";
     position: absolute;
     width: 15px;
@@ -59,7 +51,7 @@
     box-shadow: -5px -5px 0 2px #1b233d;
 }
 
-.card .top-section::before {
+#loginPanel .card .top-section::before {
     content: "";
     position: absolute;
     top: 30px;
@@ -71,29 +63,27 @@
     box-shadow: -5px -5px 0 2px #1b233d;
 }
 
-#ctiTool {
+#loginPanel #ctiTool {
     transition: 2s ease-in;
 }
 
-#ctiTool:hover {
+#loginPanel #ctiTool:hover {
     transform: rotate(360deg);
 }
 
-
-.form .form_front {
+#loginPanel .form .form_front {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 15px 10px;
     backface-visibility: hidden;
-    padding: 28px 25px;
+    padding: 28px 25px 46px;
     border-radius: 4px;
     background-color: rgb(0, 0, 0);
-    padding-bottom: 46px;
 }
 
-.form .form_back {
+#loginPanel .form .form_back {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -101,22 +91,19 @@
     gap: 20px 10px;
     backface-visibility: hidden;
     transform: rotateY(-180deg);
-    padding: 45px 25px;
+    padding: 45px 25px 55px;
     border-radius: 4px;
-    padding-bottom: 55px;
 }
 
-.form_details {
+#loginPanel .form_details {
     font-size: 18px;
     font-weight: 700;
     font-family: system-ui;
     color: rgb(255 255 255);
 }
 
-
-
-.input,
-.select {
+#loginPanel .input,
+#loginPanel .select {
     width: 245px;
     min-height: 32px;
     font-family: system-ui;
@@ -129,10 +116,9 @@
     border-radius: 6px;
     font-size: 11.5px;
     border: 2px solid #212121;
-
 }
 
-#errorMsg {
+#loginPanel #errorMsg {
     display: none;
     color: #ff001e;
     font-family: math;
@@ -143,25 +129,24 @@
     width: 86%;
 }
 
-.select {
+#loginPanel .select {
     width: 262px;
 }
 
-.input::placeholder {
+#loginPanel .input::placeholder {
     color: #999;
 }
 
-.input:focus.input::placeholder {
+#loginPanel .input:focus.input::placeholder {
     transition: 0.3s;
     opacity: 0;
 }
 
-.input:focus {
+#loginPanel .input:focus {
     transform: scale(1.05);
-
 }
 
-.btn {
+#loginPanel .btn {
     width: 80px;
     height: 27px;
     display: flex;
@@ -176,8 +161,7 @@
     transition: .2s ease-in;
 }
 
-
-.error {
+#loginPanel .error {
     color: #fd3c3c;
     display: block;
     font-size: 10px;
@@ -186,11 +170,11 @@
     font-family: system-ui;
 }
 
-.btn:hover {
+#loginPanel .btn:hover {
     transform: scale(1.05);
 }
 
-.text {
+#loginPanel .text {
     width: 65%;
     height: 100%;
     display: flex;
@@ -200,7 +184,7 @@
     background-color: rgb(32, 31, 31);
 }
 
-.svgIcon {
+#loginPanel .svgIcon {
     width: 32%;
     height: 95%;
     display: flex;
@@ -210,10 +194,66 @@
     background-color: rgb(255, 255, 255);
 }
 
-.Btn:hover .text {
+#loginPanel .Btn:hover .text {
     background-color: rgb(105, 102, 102);
 }
 
-.Btn:hover .svgIcon {
+#loginPanel .Btn:hover .svgIcon {
     background-color: rgb(0, 105, 105);
+}
+
+
+.errorX {
+    /* display: none; */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 288px;
+    padding: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    background: #252424;
+    border-radius: 8px;
+    position: absolute;
+    box-shadow: 0px 0px 5px -3px #111;
+    right: 20px;
+    bottom: 25px;
+    right: 25px;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -100;
+
+
+}
+
+.errorX.show {
+    right: 360px;
+    /* Slide in */
+}
+
+.error__icon {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-2px);
+    margin-right: 8px;
+}
+
+.error__icon path {
+    fill: #fff;
+}
+
+.error__title {
+    font-weight: 500;
+    font-size: 14px;
+    color: #fff;
+}
+
+.error__close {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.error__close path {
+    fill: #fff;
 }

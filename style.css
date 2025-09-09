@@ -5,7 +5,7 @@
     /* background: #0c40ec; */
     background: #313158;
     position: absolute;
-    left: 20px;
+    right: 20px;
     bottom: 20px;
     /* cursor: move; */
     padding: 15px;
@@ -80,8 +80,14 @@
 
 
 
-#audioDevices {
+.device-icon {
     justify-content: space-between;
+    font-size: 7px;
+    font-family: system-ui;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    color: white;
 }
 
 .device-icon img {
@@ -92,7 +98,7 @@
 }
 
 .device-icon:hover img {
-    transform: scale(1.1);
+    transform: scale(1.4);
     /* background-color: #e0f0ff; */
 }
 
@@ -546,12 +552,13 @@
 
 /* Select and input fields */
 #transferSection .form-control-sm,
-#disposeSection .form-control-sm {
-    padding: 6px 10px;
+#disposeSection .form-control-sm,
+#conferenceSection .form-control-sm {
+    padding: 3px 10px;
     font-family: system-ui;
     font-size: 11px;
     font-weight: 500;
-    border-radius: 6px;
+    border-radius: 3px;
     border: 1px solid #ccc;
     width: 100%;
     box-sizing: border-box;
@@ -559,21 +566,30 @@
 }
 
 #transferSection .form-control-sm:focus,
-#disposeSection .form-control-sm:focus {
+#disposeSection .form-control-sm:focus,
+#conferenceSection .form-control-sm:focus {
     border-color: #4d90fe;
     outline: none;
 }
 
 /* Form group spacing */
 #transferSection .form-group,
-#disposeSection .form-group {
+#disposeSection .form-group,
+#conferenceSection .form-group {
     margin-bottom: 4px;
+    display: flex;
+    color: white;
+    font-family: system-ui;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* Transfer Button */
 #transfer_btn,
 #dispose_submit_btn,
-#dispose_redial_btn {
+#dispose_redial_btn,
+#conference_initiate_btn,
+.doneBtn {
     background-color: var(--backcolor, #007bff);
     color: white;
     border: none;
@@ -586,6 +602,20 @@
     float: right;
 }
 
+
+#conference_initiate_btn {
+    background-color: var(--backcolor, #007bff);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 81px;
+}
+
+/* 
 #statusSvg {
     height: 54px;
     width: 54px;
@@ -593,9 +623,9 @@
     display: block;
     margin: auto;
     margin-top: 33px;
-}
+} */
 
-#callStatus {
+/* #callStatus {
     display: block;
     margin: auto;
     text-align: center;
@@ -604,7 +634,7 @@
     margin-top: 15px;
     color: white;
 
-}
+} */
 
 #transfer_btn:hover {
     background-color: #0056b3;
@@ -710,3 +740,428 @@
     background-color: rgb(188, 156, 218);
     display: inline-block;
 }
+
+
+/* //#######################################ANIMATIONS */
+.call-animation {
+
+    width: 63px;
+    height: 63px;
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: 28px;
+    border-radius: 100%;
+
+    animation: play 2s ease infinite;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+}
+
+
+
+#statusCard {
+
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 40px;
+    text-align: center;
+}
+
+#callStatus {
+    color: white;
+
+    margin: 50px auto;
+    /* margin-top: 40px; */
+    text-align: center;
+    width: 400px;
+    font-size: 12px;
+    font-family: system-ui;
+    font-weight: 500;
+}
+
+#statusSvg {
+    width: 63px;
+    height: 63px;
+    border-radius: 100%;
+    position: absolute;
+    right: 0px
+}
+
+@keyframes play {
+
+    0% {
+        transform: scale(1);
+    }
+
+    15% {
+        box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4);
+    }
+
+    25% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.4), 0 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    25% {
+        box-shadow: 0 0 0 15px rgba(255, 255, 255, 0.4), 0 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+
+}
+
+/* Enhanced Sound Waves */
+.sound-waves {
+    position: relative;
+
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    margin-bottom: 30px;
+}
+
+.wave-group {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.wave {
+    width: 3px;
+    background: linear-gradient(to top, #00ff88, #00cc6a);
+    margin: 0 2px;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.wave-group:nth-child(1) .wave:nth-child(1) {
+    height: 15px;
+    animation: wave 1.2s ease-in-out infinite 0s;
+}
+
+.wave-group:nth-child(1) .wave:nth-child(2) {
+    height: 25px;
+    animation: wave 1.2s ease-in-out infinite 0.1s;
+}
+
+.wave-group:nth-child(1) .wave:nth-child(3) {
+    height: 40px;
+    animation: wave 1.2s ease-in-out infinite 0.2s;
+}
+
+.wave-group:nth-child(2) .wave:nth-child(1) {
+    height: 35px;
+    animation: wave 1.4s ease-in-out infinite 0.3s;
+}
+
+.wave-group:nth-child(2) .wave:nth-child(2) {
+    height: 55px;
+    animation: wave 1.4s ease-in-out infinite 0.4s;
+}
+
+.wave-group:nth-child(2) .wave:nth-child(3) {
+    height: 45px;
+    animation: wave 1.4s ease-in-out infinite 0.5s;
+}
+
+.wave-group:nth-child(3) .wave:nth-child(1) {
+    height: 30px;
+    animation: wave 1.1s ease-in-out infinite 0.6s;
+}
+
+.wave-group:nth-child(3) .wave:nth-child(2) {
+    height: 20px;
+    animation: wave 1.1s ease-in-out infinite 0.7s;
+}
+
+.wave-group:nth-child(3) .wave:nth-child(3) {
+    height: 35px;
+    animation: wave 1.1s ease-in-out infinite 0.8s;
+}
+
+@keyframes wave {
+
+    0%,
+    100% {
+        transform: scaleY(0.2);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+
+/* // LOGIN PAGE CSS ##################### ---------------#################### */
+/* #########################################################################
+###################################################################### */
+
+/* LOGIN PANEL 2 STYLES */
+/* LOGIN PANEL 2 STYLES */
+
+#loginPanel {
+    width: 300px;
+    height: 370px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #313158;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    padding: 15px;
+    overflow: hidden;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#loginPanel .top-section2 {
+    height: 150px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#loginPanel .topsvg2 {
+    padding-bottom: 5px;
+    position: absolute;
+    top: -1px;
+}
+
+#loginPanel .top-section2 .border2 {
+    border-bottom-right-radius: 10px;
+    height: 30px;
+    width: 130px;
+    background: #1b233d;
+    position: relative;
+    transform: skew(-40deg);
+    box-shadow: -10px -10px 0 0 #1b233d;
+}
+
+#loginPanel .top-section2 .border2::before {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    top: 0;
+    right: -15px;
+    background: rgba(255, 255, 255, 0);
+    border-top-left-radius: 10px;
+    box-shadow: -5px -5px 0 2px #1b233d;
+}
+
+#loginPanel .top-section2::before {
+    content: "";
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background: rgba(255, 255, 255, 0);
+    height: 15px;
+    width: 15px;
+    border-top-left-radius: 15px;
+    box-shadow: -5px -5px 0 2px #1b233d;
+}
+
+#loginPanel #ctiTool {
+    transition: 2s ease-in;
+}
+
+#loginPanel #ctiTool:hover {
+    transform: rotate(360deg);
+}
+
+#loginPanel .form2 .form_front2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px 10px;
+    backface-visibility: hidden;
+    padding: 28px 25px 46px;
+    border-radius: 4px;
+    background-color: rgb(0, 0, 0);
+}
+
+#loginPanel .form2 .form_back2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px 10px;
+    backface-visibility: hidden;
+    transform: rotateY(-180deg);
+    padding: 45px 25px 55px;
+    border-radius: 4px;
+}
+
+#loginPanel .form_details2 {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: system-ui;
+    color: rgb(255 255 255);
+}
+
+#loginPanel .input2,
+#loginPanel .select2 {
+    width: 245px;
+    min-height: 32px;
+    font-family: system-ui;
+    font-weight: 600;
+    color: #636060;
+    outline: none;
+    transition: 0.35s;
+    padding: 0px 7px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    font-size: 11.5px;
+    border: 2px solid #212121;
+}
+
+#loginPanel #errorMsg {
+    display: none;
+    color: #ff001e;
+    font-family: math;
+    font-size: 12px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 23px;
+    width: 86%;
+}
+
+#loginPanel .select2 {
+    width: 262px;
+}
+
+#loginPanel .input2::placeholder {
+    color: #999;
+}
+
+#loginPanel .input2:focus.input2::placeholder {
+    transition: 0.3s;
+    opacity: 0;
+}
+
+#loginPanel .input2:focus {
+    transform: scale(1.05);
+}
+
+#loginPanel .btn2 {
+    width: 80px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: none;
+    border-radius: 2px;
+    padding: 1px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    transition: .2s ease-in;
+}
+
+#loginPanel .error2 {
+    color: #fd3c3c;
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    margin: auto;
+    font-family: system-ui;
+}
+
+#loginPanel .btn2:hover {
+    transform: scale(1.05);
+}
+
+#loginPanel .text2 {
+    width: 65%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: rgb(32, 31, 31);
+}
+
+#loginPanel .svgIcon2 {
+    width: 32%;
+    height: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: rgb(255, 255, 255);
+}
+
+#loginPanel .Btn2:hover .text2 {
+    background-color: rgb(105, 102, 102);
+}
+
+#loginPanel .Btn2:hover .svgIcon2 {
+    background-color: rgb(0, 105, 105);
+}
+
+.errorX {
+    display: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 288px;
+    padding: 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    background: #252424;
+    border-radius: 8px;
+    position: absolute;
+    box-shadow: 0px 0px 5px -3px #111;
+    right: 20px;
+    bottom: 25px;
+    right: 25px;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -100;
+
+
+}
+
+.errorX.show {
+    right: 360px;
+    display: flex;
+    /* Slide in */
+}
+
+.error__icon {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-2px);
+    margin-right: 8px;
+}
+
+.error__icon path {
+    fill: #fff;
+}
+
+.error__title {
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+}
+
+.error__close {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.error__close path {
+    fill: #fff;
+}
+
+
+/* // LOGIN PAGE CSS ##################### ---------------#################### */
+/* #########################################################################
+###################################################################### */
